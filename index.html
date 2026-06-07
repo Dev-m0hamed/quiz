@@ -1,0 +1,1389 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>اختبار مادة القرآن الكريم وتلاوته</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@300;400;600;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --gold: #c9a84c;
+        --gold-light: #e8cc80;
+        --gold-dark: #8a6d2a;
+        --green-deep: #0d3b2e;
+        --green-mid: #155a40;
+        --green-light: #1e7a55;
+        --cream: #fdf8ee;
+        --cream-dark: #f0e8d0;
+        --text-dark: #1a1008;
+        --text-mid: #3d2e10;
+        --correct: #2e7d32;
+        --wrong: #c62828;
+        --correct-bg: #e8f5e9;
+        --wrong-bg: #ffebee;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Cairo", sans-serif;
+        background: var(--green-deep);
+        min-height: 100vh;
+        color: var(--cream);
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      /* Geometric background pattern */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image:
+          repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 40px,
+            rgba(201, 168, 76, 0.04) 40px,
+            rgba(201, 168, 76, 0.04) 41px
+          ),
+          repeating-linear-gradient(
+            -45deg,
+            transparent,
+            transparent 40px,
+            rgba(201, 168, 76, 0.04) 40px,
+            rgba(201, 168, 76, 0.04) 41px
+          );
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .container {
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 20px 16px 40px;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Header */
+      .header {
+        text-align: center;
+        padding: 36px 24px 28px;
+        margin-bottom: 28px;
+        border-bottom: 2px solid var(--gold-dark);
+        position: relative;
+      }
+
+      .header::before {
+        content: "﷽";
+        display: block;
+        font-family: "Amiri", serif;
+        font-size: 2rem;
+        color: var(--gold);
+        margin-bottom: 16px;
+        opacity: 0.9;
+        letter-spacing: 2px;
+      }
+
+      .header h1 {
+        font-family: "Amiri", serif;
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: var(--gold-light);
+        line-height: 1.4;
+        margin-bottom: 6px;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      }
+
+      .header p {
+        font-size: 0.95rem;
+        color: var(--cream-dark);
+        opacity: 0.8;
+        font-weight: 300;
+      }
+
+      /* Score Bar */
+      .score-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(201, 168, 76, 0.3);
+        border-radius: 12px;
+        padding: 14px 20px;
+        margin-bottom: 24px;
+        backdrop-filter: blur(4px);
+      }
+
+      .score-item {
+        text-align: center;
+      }
+
+      .score-item .label {
+        font-size: 0.72rem;
+        color: var(--gold);
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+      }
+
+      .score-item .value {
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: var(--cream);
+      }
+
+      /* Progress */
+      .progress-wrap {
+        margin-bottom: 22px;
+      }
+
+      .progress-info {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.82rem;
+        color: var(--gold);
+        margin-bottom: 7px;
+        font-weight: 600;
+      }
+
+      .progress-bar {
+        height: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 99px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--gold-dark), var(--gold-light));
+        border-radius: 99px;
+        transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      /* Question Card */
+      .question-card {
+        background: var(--cream);
+        color: var(--text-dark);
+        border-radius: 16px;
+        padding: 28px 26px 22px;
+        margin-bottom: 18px;
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.35);
+        border: 1px solid rgba(201, 168, 76, 0.2);
+        animation: fadeUp 0.35s ease;
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(18px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .question-meta {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+
+      .q-badge {
+        background: var(--green-deep);
+        color: var(--gold);
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 99px;
+        letter-spacing: 0.5px;
+      }
+
+      .q-category {
+        font-size: 0.75rem;
+        color: var(--gold-dark);
+        font-weight: 600;
+        background: rgba(201, 168, 76, 0.12);
+        padding: 4px 12px;
+        border-radius: 99px;
+      }
+
+      .question-text {
+        font-family: "Amiri", serif;
+        font-size: 1.22rem;
+        line-height: 1.9;
+        color: var(--text-dark);
+        font-weight: 400;
+        margin-bottom: 22px;
+      }
+
+      /* Options */
+      .options {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 11px;
+      }
+
+      @media (max-width: 560px) {
+        .options {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .option-btn {
+        background: var(--cream-dark);
+        border: 2px solid rgba(201, 168, 76, 0.25);
+        border-radius: 10px;
+        padding: 13px 16px;
+        font-family: "Cairo", sans-serif;
+        font-size: 0.97rem;
+        font-weight: 600;
+        color: var(--text-mid);
+        cursor: pointer;
+        text-align: right;
+        transition: all 0.2s;
+        position: relative;
+        line-height: 1.5;
+      }
+
+      .option-btn:hover:not(:disabled) {
+        border-color: var(--gold);
+        background: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px rgba(201, 168, 76, 0.2);
+      }
+
+      .option-btn.correct {
+        background: var(--correct-bg);
+        border-color: var(--correct);
+        color: var(--correct);
+      }
+
+      .option-btn.wrong {
+        background: var(--wrong-bg);
+        border-color: var(--wrong);
+        color: var(--wrong);
+      }
+
+      .option-btn.selected-wrong {
+        background: var(--wrong-bg);
+        border-color: var(--wrong);
+        color: var(--wrong);
+      }
+
+      .option-btn:disabled {
+        cursor: not-allowed;
+      }
+
+      .option-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.1rem;
+      }
+
+      /* Explanation */
+      .explanation {
+        background: #fffde7;
+        border: 1px solid #f9c928;
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-top: 16px;
+        font-size: 0.9rem;
+        color: #5d4037;
+        line-height: 1.8;
+        display: none;
+        font-family: "Amiri", serif;
+      }
+
+      .explanation.show {
+        display: block;
+        animation: fadeUp 0.3s ease;
+      }
+
+      .explanation strong {
+        color: var(--gold-dark);
+        font-family: "Cairo", sans-serif;
+        font-size: 0.82rem;
+        display: block;
+        margin-bottom: 4px;
+        font-weight: 700;
+      }
+
+      /* Next Button */
+      .next-btn {
+        display: block;
+        width: 100%;
+        margin-top: 20px;
+        padding: 15px;
+        background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+        border: none;
+        border-radius: 10px;
+        color: var(--green-deep);
+        font-family: "Cairo", sans-serif;
+        font-size: 1rem;
+        font-weight: 900;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: none;
+        letter-spacing: 0.5px;
+      }
+
+      .next-btn:hover {
+        filter: brightness(1.08);
+        transform: translateY(-1px);
+      }
+      .next-btn.show {
+        display: block;
+      }
+
+      /* Result Screen */
+      .result-screen {
+        display: none;
+        text-align: center;
+        animation: fadeUp 0.5s ease;
+      }
+
+      .result-screen.show {
+        display: block;
+      }
+
+      .result-card {
+        background: var(--cream);
+        color: var(--text-dark);
+        border-radius: 20px;
+        padding: 40px 30px;
+        box-shadow: 0 12px 50px rgba(0, 0, 0, 0.4);
+      }
+
+      .result-emoji {
+        font-size: 3.5rem;
+        margin-bottom: 16px;
+      }
+
+      .result-title {
+        font-family: "Amiri", serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--green-deep);
+        margin-bottom: 10px;
+      }
+
+      .result-score-big {
+        font-size: 4rem;
+        font-weight: 900;
+        color: var(--gold-dark);
+        line-height: 1;
+        margin: 14px 0;
+      }
+
+      .result-sub {
+        font-size: 1rem;
+        color: #666;
+        margin-bottom: 28px;
+      }
+
+      .result-details {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        margin-bottom: 28px;
+      }
+
+      .detail-box {
+        background: var(--cream-dark);
+        border-radius: 12px;
+        padding: 14px 10px;
+      }
+
+      .detail-box .num {
+        font-size: 1.6rem;
+        font-weight: 900;
+      }
+      .detail-box .lbl {
+        font-size: 0.75rem;
+        color: #777;
+        margin-top: 4px;
+      }
+      .detail-box.green .num {
+        color: var(--correct);
+      }
+      .detail-box.red .num {
+        color: var(--wrong);
+      }
+      .detail-box.gold .num {
+        color: var(--gold-dark);
+      }
+
+      .grade-badge {
+        display: inline-block;
+        padding: 8px 24px;
+        border-radius: 99px;
+        font-weight: 800;
+        font-size: 1rem;
+        margin-bottom: 24px;
+      }
+
+      .restart-btn {
+        background: var(--green-deep);
+        color: var(--gold);
+        border: 2px solid var(--gold-dark);
+        border-radius: 10px;
+        padding: 13px 32px;
+        font-family: "Cairo", sans-serif;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .restart-btn:hover {
+        background: var(--gold);
+        color: var(--green-deep);
+      }
+
+      /* Start screen */
+      .start-screen {
+        text-align: center;
+        animation: fadeUp 0.5s ease;
+      }
+
+      .start-card {
+        background: var(--cream);
+        color: var(--text-dark);
+        border-radius: 20px;
+        padding: 40px 30px;
+        box-shadow: 0 12px 50px rgba(0, 0, 0, 0.4);
+      }
+
+      .start-card h2 {
+        font-family: "Amiri", serif;
+        font-size: 1.8rem;
+        color: var(--green-deep);
+        margin-bottom: 14px;
+      }
+
+      .start-card p {
+        color: #555;
+        font-size: 0.95rem;
+        line-height: 1.8;
+        margin-bottom: 24px;
+      }
+
+      .topics-list {
+        text-align: right;
+        background: var(--cream-dark);
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin-bottom: 28px;
+      }
+
+      .topics-list h3 {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--gold-dark);
+        margin-bottom: 10px;
+        letter-spacing: 0.5px;
+      }
+
+      .topics-list li {
+        list-style: none;
+        font-size: 0.88rem;
+        color: var(--text-mid);
+        padding: 4px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .topics-list li::before {
+        content: "◈";
+        color: var(--gold);
+        font-size: 0.7rem;
+      }
+
+      .start-btn {
+        background: linear-gradient(
+          135deg,
+          var(--green-mid),
+          var(--green-light)
+        );
+        color: var(--gold-light);
+        border: none;
+        border-radius: 12px;
+        padding: 15px 48px;
+        font-family: "Cairo", sans-serif;
+        font-size: 1.05rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+      }
+
+      .start-btn:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.1);
+      }
+
+      .quiz-section {
+        display: none;
+      }
+      .quiz-section.show {
+        display: block;
+      }
+      .user-form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .username-input {
+        width: 100%;
+        padding: 14px 18px;
+        border: 2px solid rgba(201, 168, 76, 0.3);
+        border-radius: 12px;
+        font-family: "Cairo", sans-serif;
+        font-size: 1rem;
+        text-align: center;
+        outline: none;
+      }
+
+      .username-input:focus {
+        border-color: var(--gold);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>اختبار مادة الإحسان</h1>
+        <p>كلية الدعوة وأصول الدين — إعداد الاختبار على أساس محتوى المقرر</p>
+      </div>
+
+      <!-- Start Screen -->
+      <div class="start-screen" id="startScreen">
+        <div class="start-card">
+          <h2>مرحباً بك في الاختبار</h2>
+          <p>
+            يشمل هذا الاختبار <strong>38 سؤالاً</strong> متنوعاً من مختلف محاور
+            المقرر، موزّعة على أسئلة اختيار من متعدد تقيس مستوى فهمك واستيعابك
+            للمادة.
+          </p>
+          <div class="topics-list">
+            <h3>المحاور المشمولة في الاختبار</h3>
+            <ul>
+              <li>تعريف الإحسان ومكانته في الإسلام</li>
+              <li>مراتب الإحسان وثمراته</li>
+              <li>المنجيات (التوبة، الإخلاص، الصدق، الصبر)</li>
+              <li>المهلكات (الغيبة، النميمة، الكذب)</li>
+              <li>المهلكات (الغضب، الحسد)</li>
+              <li>الإحسان إلى النفس وأمراضها وعلاجها</li>
+              <li>حديث جبريل عليه السلام في الإحسان</li>
+            </ul>
+          </div>
+          <div class="user-form">
+            <input
+              type="text"
+              id="username"
+              placeholder="أدخل اسمك"
+              class="username-input"
+            />
+            <button class="start-btn" onclick="startQuiz()">
+              ابدأ الاختبار ◄
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quiz Section -->
+      <div class="quiz-section" id="quizSection">
+        <div class="score-bar">
+          <div class="score-item">
+            <div class="label">السؤال</div>
+            <div class="value" id="qNum">1 / 39</div>
+          </div>
+          <div class="score-item">
+            <div class="label">الصحيح</div>
+            <div class="value" id="scoreCorrect" style="color: #81c784">0</div>
+          </div>
+          <div class="score-item">
+            <div class="label">الخطأ</div>
+            <div class="value" id="scoreWrong" style="color: #e57373">0</div>
+          </div>
+          <div class="score-item">
+            <div class="label">الدرجة</div>
+            <div class="value" id="scorePct">0%</div>
+          </div>
+        </div>
+
+        <div class="progress-wrap">
+          <div class="progress-info">
+            <span>التقدم</span>
+            <span id="progressPct">0%</span>
+          </div>
+          <div class="progress-bar">
+            <div
+              class="progress-fill"
+              id="progressFill"
+              style="width: 0%"
+            ></div>
+          </div>
+        </div>
+
+        <div class="question-card" id="questionCard">
+          <div class="question-meta">
+            <span class="q-badge" id="qBadge">س 1</span>
+            <span class="q-category" id="qCategory"></span>
+          </div>
+          <div class="question-text" id="questionText"></div>
+          <div class="options" id="optionsContainer"></div>
+          <div class="explanation" id="explanation"></div>
+          <button class="next-btn" id="nextBtn" onclick="nextQuestion()">
+            السؤال التالي ◄
+          </button>
+        </div>
+      </div>
+
+      <!-- Result Screen -->
+      <div class="result-screen" id="resultScreen">
+        <div class="result-card">
+          <div class="result-emoji" id="resultEmoji">🙂</div>
+          <div class="result-title" id="resultTitle">أحسنت!</div>
+          <div class="result-score-big" id="resultBig"></div>
+          <div class="result-sub" id="resultSub"></div>
+          <div class="grade-badge" id="gradeBadge"></div>
+          <div class="result-details">
+            <div class="detail-box green">
+              <div class="num" id="rCorrect">0</div>
+              <div class="lbl">إجابة صحيحة</div>
+            </div>
+            <div class="detail-box red">
+              <div class="num" id="rWrong">0</div>
+              <div class="lbl">إجابة خاطئة</div>
+            </div>
+            <div class="detail-box gold">
+              <div class="num">39</div>
+              <div class="lbl">مجموع الأسئلة</div>
+            </div>
+          </div>
+          <button class="restart-btn" onclick="restartQuiz()">
+            🔄 إعادة الاختبار
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const questions = [
+        // === تعريف الإحسان ومكانته ===
+
+        {
+          cat: "تعريف الإحسان",
+          q: "ما التعريف الاصطلاحي للإحسان كما ورد في حديث جبريل عليه السلام؟",
+          opts: [
+            "أن تعبد الله وكأنك تراه، فإن لم تكن تراه فإنه يراك",
+            "أن تفعل الخيرات وتبتعد عن المنكرات",
+            "أن تُخلص النية لله في العبادة فقط",
+            "أن تراقب الله في الأعمال الظاهرة دون الباطنة",
+          ],
+          ans: 0,
+          exp: "تعريف الإحسان اصطلاحًا: أن تعبد الله كأنك تراه، فإن لم تكن تراه فإنه يراك، وهو ما ورد في حديث جبريل الذي رواه الإمام مسلم.",
+        },
+
+        {
+          cat: "تعريف الإحسان",
+          q: "ماذا قال ابن الأثير في شرح الإحسان؟",
+          opts: [
+            "أراد بالإحسان: الإخلاص، وهو شرط في صحة الإيمان والإسلام معًا",
+            "أراد بالإحسان: كثرة العبادة والنوافل",
+            "أراد بالإحسان: التسبيح والذكر في كل وقت",
+            "أراد بالإحسان: الصدقة وإطعام الفقراء",
+          ],
+          ans: 0,
+          exp: "قال ابن الأثير: أراد بالإحسان الإخلاص، وهو شرط في صحة الإيمان والإسلام معًا، لأن من تلفظ بالكلمة وجاء بالعمل من غير نية إخلاص لم يكن محسنًا ولا كان إيمانه صحيحًا.",
+        },
+
+        {
+          cat: "تعريف الإحسان",
+          q: "كيف وصف النووي مقصود الإحسان؟",
+          opts: [
+            "الحث على الإخلاص في العبادة، ومراقبة العبد ربه في إتمام الخشوع والخضوع",
+            "أنه إتقان العمل الجسدي وإحكامه",
+            "أنه الالتزام بالشعائر الظاهرة دون الباطنة",
+            "أنه كثرة الصيام والصلاة",
+          ],
+          ans: 0,
+          exp: "قال النووي: مقصود الكلام الحث على الإخلاص في العبادة، ومراقبة العبد ربه تبارك وتعالى في إتمام الخشوع والخضوع وغير ذلك.",
+        },
+
+        {
+          cat: "تعريف الإحسان",
+          q: "ما الخلاصة التي توصل إليها الكتاب في تعريف الإحسان؟",
+          opts: [
+            "الإحسان هو مراقبة الله في السر والعلن، وفعل الخيرات على أكمل وجه وابتغاء مرضات الله",
+            "الإحسان هو أداء الفرائض فقط بإتقان",
+            "الإحسان هو الإكثار من النوافل والمستحبات",
+            "الإحسان هو الابتعاد عن المحرمات فقط",
+          ],
+          ans: 0,
+          exp: "الخلاصة: الإحسان هو مراقبة الله في السر والعلن، وفي القول والعمل، وهو فعل الخيرات على أكمل وجه، وابتغاء مرضات الله.",
+        },
+
+        {
+          cat: "مراتب الإحسان",
+          q: "ما المرتبة الأولى من مرتبتي الإحسان؟",
+          opts: [
+            "مقام المشاهدة: أن تعبد الله كأنك تراه، وتكون العبودية محبةً وشوقًا",
+            "مقام المراقبة: أن تعبد الله خوفًا وخشية",
+            "مقام التوبة: أن ترجع إلى الله عند كل معصية",
+            "مقام الإخلاص: أن تخلص النية في جميع الأعمال",
+          ],
+          ans: 0,
+          exp: "المرتبة الأولى: مقام المشاهدة، وهو (أن تعبد الله كأنك تراه)، وتكون فيه العبودية لله محبةً وشوقًا، وهو أعلى درجتي الإحسان.",
+        },
+
+        {
+          cat: "مراتب الإحسان",
+          q: "ما المرتبة الثانية من مرتبتي الإحسان وما طبيعة العبودية فيها؟",
+          opts: [
+            "مقام المراقبة: إن لم تكن تراه فإنه يراك، وتكون العبودية خوفًا وخشية لله",
+            "مقام الشكر: العبودية بالاعتراف بنعم الله",
+            "مقام الصبر: العبودية بتحمل البلاء دون شكوى",
+            "مقام الزهد: العبودية بالإعراض عن الدنيا",
+          ],
+          ans: 0,
+          exp: "المرتبة الثانية: مقام المراقبة، وهو (إن لم تكن تراه فإنه يراك)، وتكون العبودية في هذا المقام خوفًا وخشية لله تعالى، ويكون فيها العبد مستحضرًا أنه مطلع على سره وعلانيته.",
+        },
+
+        // === ثمرات الإحسان ===
+
+        {
+          cat: "ثمرات الإحسان",
+          q: "ما أولى ثمرات الإحسان المذكورة في الكتاب؟",
+          opts: [
+            "حصول رضى الله للمحسنين وإدخالهم جنات تجري من تحتها الأنهار خالدين فيها",
+            "حصول الغنى والثروة في الدنيا",
+            "الشفاء من الأمراض والعافية",
+            "طول العمر والبركة في الرزق",
+          ],
+          ans: 0,
+          exp: "أولى ثمرات الإحسان: حصول رضى الله للمحسنين، قال تعالى: (والسابقون الأولون... رضي الله عنهم ورضوا عنه وأعد لهم جنات تجري تحتها الأنهار خالدين فيها أبدًا ذلك الفوز العظيم).",
+        },
+
+        {
+          cat: "ثمرات الإحسان",
+          q: "ما الثمرة التي تعني أن الله يمنح المحسنين ثواب الدنيا وحسن ثواب الآخرة مجتمعين؟",
+          opts: [
+            "حب الله لهم وتفضله عليهم بثواب الدنيا وحسن ثواب الآخرة والخلود في جنات النعيم",
+            "رفع الحرج عنهم في أمور الدين",
+            "منحهم الحكمة والعلم والنبوة",
+            "معية الله بالنصر والتأييد",
+          ],
+          ans: 0,
+          exp: "من ثمرات الإحسان: حب الله لهم وتفضله عليهم بثواب الدنيا وحسن ثواب الآخرة، قال تعالى: (فآتاهم الله ثواب الدنيا وحسن ثواب الآخرة والله يحب المحسنين).",
+        },
+
+        {
+          cat: "ثمرات الإحسان",
+          q: "ما الثمرة المتعلقة بـ(هل جزاء الإحسان إلا الإحسان)؟",
+          opts: [
+            "من أحسن في الدنيا العمل كان جزاؤه الإحسان إليه في الدار الآخرة",
+            "من أحسن للناس أحسن الناس إليه في الدنيا",
+            "من أحسن في عبادته غفر الله له ذنوبه",
+            "من أحسن في عمله رُزق من حيث لا يحتسب",
+          ],
+          ans: 0,
+          exp: "قال ابن كثير في تفسير (هل جزاء الإحسان إلا الإحسان): أي ما لمن أحسن في الدنيا العمل إلا الإحسان إليه في الدار الآخرة.",
+        },
+
+        {
+          cat: "ثمرات الإحسان",
+          q: "ما معنى ثمرة (معية الله بالنصر والتأييد) للمحسنين؟",
+          opts: [
+            "إن الله مع الذين اتقوا والذين هم محسنون بالنصر والتأييد",
+            "أن الملائكة تحف بالمحسنين وتحميهم",
+            "أن الله يرفع الضر عن المحسنين دائمًا",
+            "أن المحسنين لا يصيبهم مكروه في الدنيا",
+          ],
+          ans: 0,
+          exp: "من ثمرات الإحسان: معية الله بالنصر والتأييد، قال تعالى: (إن الله مع الذين اتقوا والذين هم محسنون).",
+        },
+
+        // === المنجيات ===
+
+        {
+          cat: "المنجيات - التوبة",
+          q: "ما شروط التوبة الصحيحة المقبولة عند الله؟",
+          opts: [
+            "ترك المعصية، والعزم على عدم العودة، والندم، وإرجاع الحق إن كانت المعصية تتعلق بحق إنسان",
+            "الصيام والصلاة والصدقة فقط",
+            "الاستغفار باللسان مع الاستمرار في العمل الصالح",
+            "أداء الحج والعمرة لتكفير الذنوب",
+          ],
+          ans: 0,
+          exp: "شروط التوبة الصحيحة: ترك المعصية، والعزم على عدم العودة، والندم على ما فعل، وإرجاع الحق إن كانت المعصية تتعلق بحق إنسان، وأن تكون قبل الغرغرة، وقبل طلوع الشمس من مغربها.",
+        },
+
+        {
+          cat: "المنجيات - التوبة",
+          q: "ما الموعد الذي لا تُقبل التوبة بعده إطلاقًا؟",
+          opts: [
+            "بعد طلوع الشمس من مغربها",
+            "بعد بلوغ الستين من العمر",
+            "بعد الاعتراف بالذنب أمام الناس",
+            "بعد مرور أربعين يومًا على المعصية",
+          ],
+          ans: 0,
+          exp: "لا تُقبل التوبة بعد طلوع الشمس من مغربها، قال ﷺ: (من تاب قبل أن تطلع الشمس من مغربها تاب الله عليه)، وكذلك لا تُقبل بعد الغرغرة أي حين تبلغ الروح الحلقوم.",
+        },
+
+        {
+          cat: "المنجيات - التوبة",
+          q: "ما مثل الرجل الذي يتوب بلسانه وكلما لاحت له المعصية فعلها دون تردد؟",
+          opts: [
+            "ليس بتائب؛ لأن التائب الحقيقي هو من صمّم على عدم العودة من كل قلبه صادقًا",
+            "تائب مقبول عند الله لأنه يستغفر باستمرار",
+            "تائب ناقص يُكتب له بعض الأجر",
+            "توبته صحيحة ما دام لم يُصر على المعصية عمدًا",
+          ],
+          ans: 0,
+          exp: "ليس بتائب؛ إنما التائب من صمّم على عدم العودة من كل قلبه صادقًا، فمن تاب بلسانه وكلما لاحت له المعصية فعلها دون تردد ثم تاب فهذا ليس بتائب.",
+        },
+
+        {
+          cat: "المنجيات - التوبة",
+          q: "ما أساليب الشيطان لصرف الإنسان عن التوبة؟",
+          opts: [
+            "تسويف التوبة وتأجيلها، وتزيين المعصية وتيسيرها، وتصعيب التوبة، والتشكيك في الأحكام الشرعية",
+            "إيهامه بأن الله لن يغفر له",
+            "جعله يقنط من رحمة الله فقط",
+            "منعه من الاستغفار والذكر",
+          ],
+          ans: 0,
+          exp: "من أساليب الشيطان لصرف الإنسان عن التوبة: تسويف التوبة وتأجيلها، وتزيين المعصية وتيسيرها، وتصعيب التوبة حتى ييأس الإنسان منها، والتشكيك في الأحكام الشرعية.",
+        },
+
+        {
+          cat: "المنجيات - الإخلاص",
+          q: "ما التعريف اللغوي للإخلاص؟",
+          opts: [
+            "صفاء الشيء ونقاؤه من الشوائب",
+            "كثرة العبادة وإدامتها",
+            "الصدق في القول والفعل",
+            "الوفاء بالعهد والوعد",
+          ],
+          ans: 0,
+          exp: "الإخلاص لغةً: بمعنى صفاء الشيء ونقاؤه من الشوائب، كما في قوله تعالى عن اللبن: (خالصًا سائغًا للشاربين)، أي لا يخالطه روث ولا دم صافيًا نقيًا من الشوائب.",
+        },
+
+        {
+          cat: "المنجيات - الإخلاص",
+          q: "ما حكم الإخلاص في الإسلام؟",
+          opts: [
+            "فرض واجب في حق كل مسلم ومسلمة",
+            "سنة مؤكدة يُثاب فاعلها ولا يأثم تاركها",
+            "مستحب يُكمّل به العبادة",
+            "شرط لصحة العبادة في بعض العبادات دون غيرها",
+          ],
+          ans: 0,
+          exp: "حكم الإخلاص هو فرض واجب في حق كل مسلم ومسلمة، قال الله تعالى: (وما أمروا إلا ليعبدوا الله مخلصين له الدين حنفاء).",
+        },
+
+        {
+          cat: "المنجيات - الإخلاص",
+          q: "ما مظاهر عدم الإخلاص التي ذكرها الكتاب؟",
+          opts: [
+            "أن يكون العمل في العلن أفضل من عمل السر، وأن يعمل أمام الناس ويتركه في السر",
+            "أن يكثر من الصلاة في المسجد فقط",
+            "أن يتصدق بالمال أمام الناس",
+            "أن يتكلم بالعلم دون عمل",
+          ],
+          ans: 0,
+          exp: "من مظاهر عدم الإخلاص: أن يكون عمله أمام الناس أفضل من عمل السر، وأن يعمل أمام الناس ويتركه في السر، وانتهاك حرمات الله في الخلوة مع إظهار تعظيمها أمام الناس، والتكبر عن سماع النصيحة.",
+        },
+
+        {
+          cat: "المنجيات - الصدق",
+          q: "ما تعريف الصدق كما ذكره الكتاب؟",
+          opts: [
+            "القول الذي يطابق ما هو في الحقيقة والواقع دون زيادة أو نقصان",
+            "الوفاء بالعهد والوعد في كل الأحوال",
+            "الأمانة في المال والمعاملات",
+            "الشجاعة في قول الحق أمام الناس",
+          ],
+          ans: 0,
+          exp: "الصدق: هو القول الذي يطابق ما هو في الحقيقة والواقع دون زيادة أو نقصان، وهو الصدق في الأعمال والأفعال، حيث يجب أن تكون أفعال الشخص مطابقة لأقواله.",
+        },
+
+        {
+          cat: "المنجيات - الصدق",
+          q: "ما فوائد الصدق الواردة في الكتاب؟",
+          opts: [
+            "الشعور بالأمان والاطمئنان والراحة، ونيل مرتبة عليا عند الله والفوز بالجنة، والبركة في المال والرزق",
+            "الغنى المادي وكثرة الأصدقاء فقط",
+            "العافية من الأمراض وطول العمر",
+            "الشهرة والمكانة الاجتماعية فقط",
+          ],
+          ans: 0,
+          exp: "من فوائد الصدق: الشعور بالأمان والاطمئنان والراحة، ونيل مرتبة عليا عند الله، والفوز بالجنة في الآخرة، والبركة في المال والعمل والرزق، والمكانة والثقة والاحترام من الناس.",
+        },
+
+        {
+          cat: "المنجيات - الصبر",
+          q: "ما الأقسام الثلاثة للصبر التي ذكرها الكتاب؟",
+          opts: [
+            "الصبر على طاعة الله، والصبر عن المعاصي، والصبر على المصائب",
+            "الصبر على الفقر، والصبر على المرض، والصبر على موت العزيز",
+            "الصبر في الصلاة، والصبر في الصيام، والصبر في الجهاد",
+            "الصبر مع الناس، والصبر مع الأهل، والصبر مع النفس",
+          ],
+          ans: 0,
+          exp: "قسّم العلماء الصبر على أقسام ثلاثة: الصبر على طاعة الله (كالصلاة والصوم والحج)، والصبر عن المعاصي (كالبعد عن المحرمات)، والصبر على المصائب (كالفقر والمرض وموت عزيز).",
+        },
+
+        {
+          cat: "المنجيات - الصبر",
+          q: "لماذا لا يدل الابتلاء دائمًا على سخط الله أو محبته للعبد؟",
+          opts: [
+            "لأن الله قد يبتلي من يحبه بالمصائب وقد يبتلي من يبغضه بسعة الرزق والصحة",
+            "لأن الابتلاء للكافر فقط دليل السخط",
+            "لأن الابتلاء دائمًا دليل على المحبة للمؤمن",
+            "لأن الله لا يبتلي المؤمنين بالمصائب",
+          ],
+          ans: 0,
+          exp: "الابتلاء سواء كان بالخير أو بالشر فإنه لا يدل دائمًا على محبة الله ولا على سخطه، فقد يبتلي الله من يحبه بأنواع من المصائب، وقد يبتلي من يبغضه بسعة الرزق وكثرة الأولاد والصحة.",
+        },
+
+        {
+          cat: "المنجيات - الصبر",
+          q: "ما الدعاء الذي أرشدنا إليه النبي ﷺ عند المصيبة ومالذا يُقال؟",
+          opts: [
+            "اللهم أجرني في مصيبتي وأخلف لي خيرًا منها؛ لأن الله يعوض المصاب خيرًا مما فقد",
+            "سبحان الله والحمد لله؛ لأن الذكر يمحو المصيبة",
+            "لا حول ولا قوة إلا بالله؛ لأنها كنز من كنوز الجنة",
+            "حسبنا الله ونعم الوكيل؛ لأنها أقوى الأدعية",
+          ],
+          ans: 0,
+          exp: "أرشدنا النبي ﷺ أن من أصيب بمصيبة أن يقول: (إنا لله وإنا إليه راجعون، اللهم أجرني في مصيبتي وأخلف لي خيرًا منها)، فقد جعل الله هذا الدعاء ملجأً لكل مصاب، يعوضه الله تعالى به خيرًا مما فقد.",
+        },
+
+        // === المهلكات ===
+
+        {
+          cat: "المهلكات - الغيبة",
+          q: "ما تعريف الغيبة كما جاء في الحديث النبوي الشريف؟",
+          opts: [
+            "ذكرك أخاك بما يكره",
+            "الكلام في غيبة الشخص سواء كان صحيحًا أم لا",
+            "سب الشخص أمام الناس",
+            "الكذب على الشخص في غيابه",
+          ],
+          ans: 0,
+          exp: "الغيبة: ذكرك أخاك بما يكره، كما جاء في حديث أبي هريرة: قال ﷺ: (ذكرك أخاك بما يكره، قيل: أفرأيت إن كان في أخي ما أقول؟ قال: إن كان فيه ما تقول فقد اغتبته، وإن لم يكن فيه فقد بهته).",
+        },
+
+        {
+          cat: "المهلكات - الغيبة",
+          q: "ما الحالات التي يجوز فيها ذكر صفات الآخرين السلبية ولا تنعقد بها غيبة؟",
+          opts: [
+            "التظلم، والاستعانة على تغيير المنكر، وتحذير الناس من ضرر أحدهم",
+            "الحديث في مجالس الأصدقاء فقط",
+            "كلما كان الكلام صحيحًا لا غيبة فيه",
+            "لا يجوز ذكر صفات الآخرين في أي حال",
+          ],
+          ans: 0,
+          exp: "المواطن التي يجوز فيها ذكر صفات الآخرين السلبية: التظلم (الشكاية للمسؤول بهدف الإنصاف)، والاستعانة على تغيير المنكر، وتحذير الناس من ضرر أحدهم.",
+        },
+
+        {
+          cat: "المهلكات - الغيبة",
+          q: "ما الأسباب الدافعة للغيبة التي ذكرها الكتاب؟",
+          opts: [
+            "المزاح وإثارة الضحك، والسخرية واستصغار الآخرين، والحسد والحقد، ومجاملة الأصدقاء والرفقاء",
+            "الجهل بحكم الغيبة فقط",
+            "ضعف الإيمان وقلة العبادة فقط",
+            "الفراغ وضعف الشخصية فقط",
+          ],
+          ans: 0,
+          exp: "أسباب الغيبة: المزاح وإثارة الضحك، والسخرية والاستهزاء واحتقار الآخرين، والحسد والحقد، ومجاملة الأصدقاء والرفقاء وهو نوع من الرياء.",
+        },
+
+        {
+          cat: "المهلكات - النميمة",
+          q: "ما تعريف النميمة؟",
+          opts: [
+            "نقل الحديث على وجه الإشاعة والإفساد",
+            "الكذب على الشخص في وجهه",
+            "السخرية من الناس في مجالسهم",
+            "إفشاء أسرار الأصدقاء",
+          ],
+          ans: 0,
+          exp: "النميمة: هي نقل الحديث على وجه الإشاعة والإفساد، وقيل: تزيين الكلام بالكذب.",
+        },
+
+        {
+          cat: "المهلكات - النميمة",
+          q: "ما الذي يجب على من وصله كلام نمام؟",
+          opts: [
+            "ألا يصدقه، وأن ينهاه عن النميمة، وألا يظن بالآخرين سوءًا",
+            "أن يتجاهله ولا يرد عليه",
+            "أن يعاقبه ويُبعده",
+            "أن يخبر من نُقل عنه الكلام مباشرة",
+          ],
+          ans: 0,
+          exp: "يجب على من وصله كلام نمام: ألا يصدقه لقوله تعالى: (إن جاءكم فاسق بنبإ فتبينوا)، وأن ينهاه عن النميمة وهو من الأمر بالمعروف والنهي عن المنكر، وألا يظن بالآخرين سوءًا.",
+        },
+
+        {
+          cat: "المهلكات - الكذب",
+          q: "في أي المواطن أباح الإسلام الكذب؟",
+          opts: [
+            "في الإصلاح بين المتخاصمين، وفي الحرب، وما يقوله الرجل لامرأته ليُرضيها",
+            "في الكذب للدفاع عن النفس فقط",
+            "في الكذب للحفاظ على المال",
+            "لا يُباح الكذب بأي حال",
+          ],
+          ans: 0,
+          exp: "أباح الإسلام الكذب في ثلاثة مواطن: رجل كذب امرأته ليُرضيها، ورجل كذب في الحرب فإن الحرب خُدعة، ورجل كذب بين مسلمين ليصلح بينهما.",
+        },
+
+        {
+          cat: "المهلكات - الغضب",
+          q: "ما القول النبوي الذي يبيّن مفهوم القوة الحقيقية في الإسلام مقارنةً بالغضب؟",
+          opts: [
+            "ليس الشديد بالصُّرعة، إنما الشديد الذي يملك نفسه عند الغضب",
+            "المؤمن القوي خير من المؤمن الضعيف",
+            "لا يحل للمسلم أن يهجر أخاه فوق ثلاث",
+            "من كظم غيظًا دعاه الله يوم القيامة على رؤوس الخلائق",
+          ],
+          ans: 0,
+          exp: "قال النبي ﷺ: (ليس الشديد بالصُّرعة، إنما الشديد الذي يملك نفسه عند الغضب)، فالقوة الحقيقية في كظم الغيظ وضبط النفس لا في الغلبة الجسدية.",
+        },
+
+        {
+          cat: "المهلكات - الغضب",
+          q: "ما علاج الغضب المستحب الذي يؤيده الطب الحديث من الناحية العلمية؟",
+          opts: [
+            "الوضوء وغسل الأعضاء بالماء؛ لأن الماء البارد يخفف الحرارة ويهدئ الجهاز العصبي",
+            "الأكل والشرب لتشغيل الجسم",
+            "الخروج للهواء الطلق فورًا",
+            "الصراخ وإخراج الغضب",
+          ],
+          ans: 0,
+          exp: "من علاج الغضب: الوضوء؛ لأن الطب الحديث أثبت أن الغضب يشعل ارتفاع الحرارة العامة، ويأتي الماء البارد ليخفف هذا بفعل تبريد السطح، وقد ثبت علميًا سخونة الجلد بتأثير الغضب وهذا التأثير ينحسر مع الوضوء.",
+        },
+
+        {
+          cat: "المهلكات - الغضب",
+          q: "ما الحكمة من أمر الغاضب بالجلوس أو الاضطجاع؟",
+          opts: [
+            "لأن القائم متهيئ للانتقام، والجالس دونه، والمضطجع أبعد عنه، فالأمر بالتباعد عن حالة الانتقام",
+            "لأن الجلوس يُشعره بالضعف فيهدأ",
+            "لأن وضعية الجلوس تقلل ضغط الدم فقط",
+            "لأنها وصفة طبية قديمة",
+          ],
+          ans: 0,
+          exp: "الحكمة في الجلوس والاضطجاع: أن القائم متهيئ للانتقام، والجالس دونه في ذلك، والمضطجع أبعد عنه، فأمره النبي ﷺ بالتباعد عن حالة الانتقام، وقد أيّد الطب الحديث هذه الوصفة النبوية.",
+        },
+
+        {
+          cat: "المهلكات - الحسد",
+          q: "ما أنواع الحسد الثلاثة التي ذكرها الكتاب؟",
+          opts: [
+            "أن يحب زوال النعمة دون أن تنتقل إليه، وأن يحب زوالها وانتقالها إليه، وأن يتمنى مثلها (الغبطة)",
+            "الحسد بالقلب، والحسد بالكلام، والحسد بالفعل",
+            "الحسد في الدنيا، والحسد في الآخرة، والحسد المجازي",
+            "حسد الأغنياء، وحسد العلماء، وحسد الأقارب",
+          ],
+          ans: 0,
+          exp: "أنواع الحسد: الأول أن يحب الحاسد زوال النعمة عن المحسود دون أن تنتقل إليه وهو غاية الخبث، والثاني أن يحب زوالها وانتقالها إليه، والثالث أن يتمنى مثل ما عند الغير وهو (الغبطة) وهو جائز شرعًا.",
+        },
+
+        {
+          cat: "المهلكات - الحسد",
+          q: "ما الحسد الجائز شرعًا الذي ذكره النبي ﷺ في حديث رواه البخاري؟",
+          opts: [
+            "الحسد في اثنتين: رجل آتاه الله مالًا فسُلِّط على هلكته في الحق، ورجل آتاه الله الحكمة فهو يقضي بها ويعلمها",
+            "الحسد في طلب العلم والحصول على العلم",
+            "الحسد في الصلاة والصيام والحج",
+            "الحسد في الزواج والذرية الصالحة",
+          ],
+          ans: 0,
+          exp: "قال النبي ﷺ: (لا حسد إلا في اثنتين: رجل آتاه الله مالًا فسُلِّط على هلكته في الحق، ورجل آتاه الله الحكمة فهو يقضي بها ويعلمها).",
+        },
+
+        // === مظاهر الإحسان - الإحسان إلى النفس ===
+
+        {
+          cat: "الإحسان إلى النفس",
+          q: "ما أنواع النفوس الثلاثة التي ذكرها القرآن الكريم؟",
+          opts: [
+            "النفس المطمئنة، والنفس اللوامة، والنفس الأمارة بالسوء",
+            "النفس الصالحة، والنفس الطالحة، والنفس المتوسطة",
+            "النفس المؤمنة، والنفس الكافرة، والنفس الفاجرة",
+            "النفس الراضية، والنفس المرضية، والنفس الخاطئة",
+          ],
+          ans: 0,
+          exp: "ذكر القرآن عدة أنواع للنفس البشرية أهمها: النفس المطمئنة (الخاضعة لله المدركة لهدف العبادة)، والنفس اللوامة (التي تتقلب بين الطاعة والمعصية وتلوم صاحبها)، والنفس الأمارة بالسوء (التي تميل للشهوات وتقترف الذنوب).",
+        },
+
+        {
+          cat: "الإحسان إلى النفس",
+          q: "ما صفات النفس اللوامة؟",
+          opts: [
+            "الندم على المعصية، والتوبة من الذنب، وعقد العزم على عدم الرجوع إليه، وتحاسب صاحبها",
+            "الإصرار على الذنب مع الاعتراف به",
+            "كثرة العبادة مع الوقوع في بعض المعاصي",
+            "الحرص على الظاهر دون الاهتمام بالباطن",
+          ],
+          ans: 0,
+          exp: "صفات النفس اللوامة: الندم على المعصية، والتوبة من الذنب، وعقد العزم على عدم الرجوع إليه، وتحاسب صاحبها على سلوكياته، ويغلب جانب الخير فيها على جانب الشر.",
+        },
+
+        {
+          cat: "الإحسان إلى النفس",
+          q: "ما أمراض النفس البشرية وعلاجها التي ذكرها الكتاب؟",
+          opts: [
+            "الجهل (علاجه العلم والمعرفة)، وحب الشهوات (علاجه إشباعها بالحلال)، واتباع الهوى (علاجه الضوابط الشرعية)، وكثرة الذنوب (علاجها التوبة)",
+            "الفقر والمرض والجهل فقط",
+            "الكبر والحسد والغضب فقط",
+            "الوسواس والقلق والاكتئاب",
+          ],
+          ans: 0,
+          exp: "أمراض النفس وعلاجها: الجهل (علاجه العلم والمعرفة بالله وما أحل وما حرم)، وحب الشهوات (علاجه إشباعها بالطرق الحلال)، واتباع الهوى (علاجه الضوابط الشرعية والأخلاقية)، وكثرة الذنوب (علاجها التوبة والرجوع إلى الله).",
+        },
+
+        {
+          cat: "الإحسان إلى النفس",
+          q: "ما سُبل الإحسان إلى النفس البشرية وعلاج أمراضها التي ذكرها الكتاب؟",
+          opts: [
+            "العلم والمعرفة، والعبادة، وحسن الخلق، وذكر الموت",
+            "الصيام والصلاة فقط",
+            "كثرة الصدقة والأعمال الخيرية",
+            "الابتعاد عن الناس والخلوة",
+          ],
+          ans: 0,
+          exp: "سبل الإحسان إلى النفس: العلم والمعرفة (لانتشالها من الجهل)، والعبادة (لأنها خُلقت لها)، وحسن الخلق (بالتخلي عن الرذائل والتحلي بالفضائل)، وذكر الموت (لوعظها والاستعداد للقاء الله).",
+        },
+
+        // === حديث جبريل ===
+
+        {
+          cat: "حديث جبريل",
+          q: "من الذي جاء يسأل النبي ﷺ في حديث جبريل المشهور، وما هيئته؟",
+          opts: [
+            "جبريل عليه السلام في صورة رجل شديد بياض الثياب شديد سواد الشعر لا يعرفه أحد من الصحابة",
+            "رجل من البادية جاء ليسأل عن أمور دينه",
+            "أحد الصحابة الكرام في صورة مجهول",
+            "ملَك من الملائكة ظهر بصورته الحقيقية",
+          ],
+          ans: 0,
+          exp: "الذي جاء في حديث جبريل هو جبريل عليه السلام في صورة رجل شديد بياض الثياب شديد سواد الشعر، لا يُرى عليه أثر السفر، ولا يعرفه أحد من الصحابة، جلس جلسة المتأدب.",
+        },
+
+        {
+          cat: "حديث جبريل",
+          q: "ما العلوم والمعارف التي يجمعها حديث جبريل عليه السلام؟",
+          opts: [
+            "الإسلام، والإيمان، والإحسان، وأخبار الساعة",
+            "العبادات والمعاملات والأخلاق",
+            "العقيدة والفقه والحديث",
+            "التفسير واللغة والسيرة",
+          ],
+          ans: 0,
+          exp: "حديث جبريل جامع لجميع العلوم والمعارف الشرعية، ففيه الحديث عن الإسلام، والإيمان، والإحسان، وأخبار الساعة، لذلك يُعد من أجمع الأحاديث النبوية.",
+        },
+      ];
+
+      let username = "";
+      let current = 0;
+      let correct = 0;
+      let wrong = 0;
+      let answered = false;
+      let shuffled = [];
+
+      function shuffle(arr) {
+        return [...arr].sort(() => Math.random() - 0.5);
+      }
+
+      function startQuiz() {
+        const input = document.getElementById("username");
+
+        if (!input.value.trim()) {
+          alert("من فضلك أدخل اسم المستخدم");
+          return;
+        }
+
+        username = input.value.trim();
+
+        shuffled = shuffle(questions);
+        document.getElementById("startScreen").style.display = "none";
+        document.getElementById("quizSection").classList.add("show");
+        renderQuestion();
+      }
+
+      function renderQuestion() {
+        answered = false;
+        const q = shuffled[current];
+        document.getElementById("qNum").textContent =
+          `${current + 1} / ${shuffled.length}`;
+        document.getElementById("qBadge").textContent = `س ${current + 1}`;
+        document.getElementById("qCategory").textContent = q.cat;
+        document.getElementById("questionText").textContent = q.q;
+        document.getElementById("explanation").classList.remove("show");
+        document.getElementById("nextBtn").classList.remove("show");
+
+        const pct = Math.round((current / shuffled.length) * 100);
+        document.getElementById("progressFill").style.width = pct + "%";
+        document.getElementById("progressPct").textContent = pct + "%";
+
+        const opts = document.getElementById("optionsContainer");
+        opts.innerHTML = "";
+        q.opts.forEach((opt, i) => {
+          const btn = document.createElement("button");
+          btn.className = "option-btn";
+          btn.textContent = opt;
+          btn.onclick = () => selectAnswer(i);
+          opts.appendChild(btn);
+        });
+
+        // Re-animate card
+        const card = document.getElementById("questionCard");
+        card.style.animation = "none";
+        void card.offsetWidth;
+        card.style.animation = "fadeUp 0.35s ease";
+      }
+
+      function selectAnswer(idx) {
+        if (answered) return;
+        answered = true;
+        const q = shuffled[current];
+        const btns = document.querySelectorAll(".option-btn");
+
+        btns.forEach((btn, i) => {
+          btn.disabled = true;
+          if (i === q.ans) {
+            btn.classList.add("correct");
+            btn.innerHTML = `<span class="option-icon">✓</span>${btn.textContent}`;
+          } else if (i === idx && idx !== q.ans) {
+            btn.classList.add("selected-wrong");
+            btn.innerHTML = `<span class="option-icon">✗</span>${btn.textContent}`;
+          }
+        });
+
+        if (idx === q.ans) {
+          correct++;
+          document.getElementById("scoreCorrect").textContent = correct;
+        } else {
+          wrong++;
+          document.getElementById("scoreWrong").textContent = wrong;
+        }
+
+        const done = correct + wrong;
+        const pct = done > 0 ? Math.round((correct / done) * 100) : 0;
+        document.getElementById("scorePct").textContent = pct + "%";
+
+        const expEl = document.getElementById("explanation");
+        expEl.innerHTML = `<strong>📖 الشرح:</strong>${q.exp}`;
+        expEl.classList.add("show");
+        document.getElementById("nextBtn").classList.add("show");
+        document.getElementById("nextBtn").textContent =
+          current < shuffled.length - 1 ? "السؤال التالي ◄" : "عرض النتيجة 🎯";
+      }
+
+      function nextQuestion() {
+        current++;
+        if (current >= shuffled.length) {
+          showResult();
+        } else {
+          renderQuestion();
+        }
+      }
+
+      function showResult() {
+        document.getElementById("quizSection").classList.remove("show");
+        const pct = Math.round((correct / shuffled.length) * 100);
+        let emoji, title, grade, gbColor;
+        if (pct >= 90) {
+          emoji = "🙂";
+          title = `المفروض اجيب بطيخه بالعلامه دي ولا ايه يا؟ ${username}🙂`;
+          grade = "روح ذاكر الله يستر عليك🙂";
+          gbColor = "#2e7d32";
+        } else if (pct >= 75) {
+          emoji = "🙂";
+          title = `المفروض اجيب بطيخه بالعلامه دي ولا ايه يا؟ ${username}🙂`;
+          grade = "شو مالنااا🙂";
+          gbColor = "#1565c0";
+        } else if (pct >= 60) {
+          emoji = "😐";
+          title = `فاشل يا ${username}🙂`;
+          grade = "روح ذاكر الله يستر عليك🙂";
+          gbColor = "#e65100";
+        } else if (pct >= 50) {
+          emoji = "📚";
+          title = "مقبول، راجع المادة";
+          grade = "مقبول (D)";
+          gbColor = "#6a1b9a";
+        } else {
+          emoji = "📖";
+          title = "يحتاج مراجعة";
+          grade = "راسب — راجع المادة";
+          gbColor = "#b71c1c";
+        }
+
+        if (username === "آية") {
+          emoji = "❤️";
+          title = "اشطر كتكوتة🥹❤️";
+          grade = "(A+)❤️ فخور بيكي يعمري";
+          gbColor = "#2e7d32";
+        }
+
+        document.getElementById("resultEmoji").textContent = emoji;
+        document.getElementById("resultTitle").textContent = title;
+        document.getElementById("resultBig").textContent = pct + "%";
+        document.getElementById("resultSub").textContent =
+          `أجبت على ${shuffled.length} سؤالاً`;
+        const gb = document.getElementById("gradeBadge");
+        gb.textContent = grade;
+        gb.style.background = gbColor + "22";
+        gb.style.color = gbColor;
+        gb.style.border = `2px solid ${gbColor}`;
+        document.getElementById("rCorrect").textContent = correct;
+        document.getElementById("rWrong").textContent = wrong;
+
+        const prog = Math.round((current / shuffled.length) * 100);
+        document.getElementById("progressFill").style.width = "100%";
+
+        document.getElementById("resultScreen").classList.add("show");
+      }
+
+      function restartQuiz() {
+        current = 0;
+        correct = 0;
+        wrong = 0;
+        answered = false;
+        document.getElementById("resultScreen").classList.remove("show");
+        document.getElementById("scoreCorrect").textContent = "0";
+        document.getElementById("scoreWrong").textContent = "0";
+        document.getElementById("scorePct").textContent = "0%";
+        document.getElementById("progressFill").style.width = "0%";
+        shuffled = shuffle(questions);
+        document.getElementById("quizSection").classList.add("show");
+        renderQuestion();
+      }
+    </script>
+  </body>
+</html>
